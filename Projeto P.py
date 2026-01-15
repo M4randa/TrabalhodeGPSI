@@ -15,7 +15,7 @@ while True:
 
     print("SALDO ATUAL: " + str(round(JOGADOR_SALDO, 2)) + "")
     print("-------------------------------")
-    print("1- Comprar Jogos")
+    print("3 Comprar Jogos")
     print("2- Ver Historico de Compras/Acoes")
     print("3- Adicionar Dinheiro")
     print("4- Gerir Stock (Admin)")
@@ -137,3 +137,4 @@ while True:
         break
     else:
         print("\n❌ ERRO: Opcao invalida. Escolha um numero de 1 a 5.")
+
