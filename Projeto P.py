@@ -12,7 +12,7 @@ pygame.display.set_caption("GRS - Samurai vs Mago")
 # .convert() otimiza a imagem para o mesmo formato de pixels da tela, melhorando a performance
 bg = pygame.image.load(r"C:\Users\goatm\PyCharmMiscProject\JOGO\test_2.png").convert()
 bg = pygame.transform.scale(bg, (largura, altura))
-bg_gameover = pygame.image.load(r"C:\Users\goatm\PyCharmMiscProject\JOGO\Game Over super Mario screen.jpg"  ).convert()
+bg_gameover = pygame.image.load(r"C:\Users\goatm\PyCharmMiscProject\JOGO\Game Over super Mario screen.jpg").convert()
 bg_gameover = pygame.transform.scale(bg_gameover, (largura, altura))
 bg_win = pygame.image.load(r"C:\Users\goatm\PyCharmMiscProject\JOGO\you win.png").convert()
 bg_win = pygame.transform.scale(bg_win, (largura, altura))
@@ -49,7 +49,8 @@ player = Samurai(todos_sprites)
 mago_npc = Mago(todos_sprites)
 
 # Variáveis Globais de Controle de Jogo
-estado = "MENU_INICIAL"  # Máquina de estados: controla em que tela o jogo está
+# MÁQUINA DE ESTADOS: Estratégia para o código saber se desenha o menu, o jogo ou o Game Over.
+estado = "MENU_INICIAL"
 opcao_sim = True  # Alternador para o menu de desistência (SIM/NÃO)
 fases_gerar = 3  # Contador de quantas frases o jogador precisa escrever
 perguntas_respondidas = 0  # Contador de progresso no desafio final
@@ -104,9 +105,10 @@ while True:
 
             elif estado == "GERANDO":
                 if ev.key == pygame.K_RETURN:
-                    # QUANDO CLICAS ENTER, O PYTHON GERA A SIGLA NO CONSOLE
+                    # F-STRING: O 'f' antes das aspas permite colocar variáveis diretamente dentro do texto
+                    # usando chaves {}. É muito mais rápido e limpo que usar concatenação com '+'.
                     resultado_sigla = gerar_siglas(input_usuario)
-                    print(f"  {resultado_sigla}")
+                    print(f"Sigla gerada: {resultado_sigla}")
 
                     fases_gerar -= 1
                     input_usuario = ""  # Limpa para a próxima
@@ -117,8 +119,9 @@ while True:
                         frase_atual, sigla_esperada = banco_questoes[0]
 
                 elif ev.key == pygame.K_BACKSPACE:
-                    input_usuario = input_usuario[:-1]
+                    input_usuario = input_usuario[:-1]  # Remove o último caractere da string
                 else:
+                    # ev.unicode: Captura a letra exata que o usuário digitou
                     input_usuario += ev.unicode.upper()
 
             elif estado == "DESAFIO":
@@ -148,13 +151,15 @@ while True:
                 player.vel_y = 0
                 player.rect.midbottom = (150, 450)
 
-                # --- ATUALIZAÇÃO DE LÓGICA ---
+                # --- ATUALIZAÇÃO DE LÓGICA (UPDATE) ---
     if estado == "ANDANDO":
         todos_sprites.update()
+        # DETECÇÃO DE COLISÃO: Verifica se o retângulo do player encostou no do NPC
         if pygame.sprite.collide_rect(player, mago_npc):
             estado = "GERANDO"
 
     if estado in ["MENU_INICIAL", "GERANDO", "DESAFIO"]:
+        # Atualiza apenas a animação do Mago (NPC) enquanto o jogo espera o input
         mago_npc.update()
 
     # --- DESENHO (RENDERIZAÇÃO) ---
@@ -162,14 +167,15 @@ while True:
 
     if estado in ["MENU_INICIAL", "ANDANDO", "GERANDO", "DESAFIO"]:
         tela.blit(bg, (0, 0))
-        todos_sprites.draw(tela)
+        todos_sprites.draw(tela)  # Desenha todos os objetos que estão no grupo
 
         if estado == "MENU_INICIAL":
             desenha_caixa("Desistir?", "   [SIM]      [NÃO]")
             seta = ">" if opcao_sim else "             >"
             tela.blit(fonte.render(seta, True, (255, 0, 0)), (70, 80))
         elif estado == "GERANDO":
-            desenha_caixa(f"Mago: Eu sei gerar Siglas ({fases_gerar})", f"Texto: {input_usuario}")
+            # Exemplo de f-string na interface gráfica para mostrar contagem e texto
+            desenha_caixa(f"Mago: Eu sei gerar Siglas ({fases_gerar})", f"Sigla: {input_usuario}")
         elif estado == "DESAFIO":
             desenha_caixa(f"Sigla de: {frase_atual}", f"Resp: {input_usuario}")
 
@@ -178,5 +184,8 @@ while True:
     elif estado == "WIN":
         tela.blit(bg_win, (0, 0))
 
+    # Atualiza a tela inteira com as mudanças
     pygame.display.update()
+
+    # CONTROLADOR DE FPS: Garante que o jogo rode a 60 frames por segundo em qualquer PC
     relogio.tick(60)
