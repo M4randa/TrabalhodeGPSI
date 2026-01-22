@@ -148,7 +148,6 @@ while True:
                 perguntas_respondidas = 0
                 erros = 0;
                 input_usuario = ""
-                player.vel_y = 0
                 player.rect.midbottom = (150, 450)
 
                 # --- ATUALIZAÇÃO DE LÓGICA (UPDATE) ---
@@ -189,3 +188,4 @@ while True:
 
     # CONTROLADOR DE FPS: Garante que o jogo rode a 60 frames por segundo em qualquer PC
     relogio.tick(60)
+
